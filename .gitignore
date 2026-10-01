@@ -1,0 +1,53 @@
+﻿# ── Virtual environment ──────────────────────────────────────────────────────
+.venv/
+
+# ── Local pip cache ──────────────────────────────────────────────────────────
+.cache/
+
+# ── Python bytecode ──────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ── Secrets / environment variables ─────────────────────────────────────────
+.env
+*.env
+secrets.toml
+.streamlit/secrets.toml
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+streamlit_out.log
+streamlit_err.log
+streamlit_test.log
+
+# ── Jupyter checkpoints ───────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── OS files ─────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Large raw dataset files (too big for GitHub / not needed in deployment) ──
+# city_day.csv is 2.45 MB → COMMITTED (needed locally and in deployment)
+# stations.csv is 14 KB  → COMMITTED
+city_hour.csv
+station_day.csv
+station_hour.csv
+
+# ── Locally generated outputs that can be regenerated ────────────────────────
+outputs/plots/*.html
+outputs/plots/*.png
+
+# ── Local tools (e.g. cloudflared binary) ───────────────────────────────────
+.tools/
+
+# ── IDE / editor ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ── Temporary files ───────────────────────────────────────────────────────────
+*.tmp
+*.bak
+_check_inspect.py

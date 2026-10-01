@@ -1,0 +1,23 @@
+# Core data & ML
+pandas==2.1.4
+numpy==1.26.4
+scikit-learn==1.4.2
+joblib==1.4.2
+
+# Visualisation
+plotly==5.22.0
+matplotlib==3.8.4
+seaborn==0.13.2
+
+# Web application
+streamlit==1.35.0
+
+# Boosting (optional but included — pure-Python wheel, no system deps)
+xgboost==2.0.3
+
+# Office / serialisation
+openpyxl==3.1.2
+
+# Jupyter notebook support (local development only — harmless on Cloud)
+ipykernel==6.29.4
+nbformat==5.10.4
