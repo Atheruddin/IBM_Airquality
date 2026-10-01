@@ -766,7 +766,8 @@ elif page == "📈 Next-Day Forecast":
                 pred = max(0.0, float(pipeline.predict(row_df)[0]))
                 cat_label, _ = pm25_category(pred)
                 forecast_rows.append({
-                    "Date": fc_date.date(),
+                    # Store as Timestamp so the whole column is uniform datetime64
+                    "Date": pd.Timestamp(fc_date),
                     "Forecast PM2.5": round(pred, 2),
                     "Category": cat_label,
                     "Type": "Forecast",
@@ -775,6 +776,8 @@ elif page == "📈 Next-Day Forecast":
                 rolling_hist = rolling_hist[-7:]
 
         df_fc = pd.DataFrame(forecast_rows)
+        # Ensure Date column is proper datetime64 (not mixed Python objects)
+        df_fc["Date"] = pd.to_datetime(df_fc["Date"])
 
         st.markdown("#### 📈 Forecast Results")
 
@@ -782,7 +785,7 @@ elif page == "📈 Next-Day Forecast":
         hist_plot["Type"] = "Historical"
         hist_plot.rename(columns={"PM2.5": "PM2.5 (µg/m³)"}, inplace=True)
         fc_plot = df_fc.copy()
-        fc_plot["Date"] = pd.to_datetime(fc_plot["Date"])
+        # Date is already datetime64; rename for the combined plot
         fc_plot.rename(columns={"Forecast PM2.5": "PM2.5 (µg/m³)"}, inplace=True)
         combined = pd.concat([
             hist_plot[["Date", "PM2.5 (µg/m³)", "Type"]],
@@ -794,15 +797,33 @@ elif page == "📈 Next-Day Forecast":
             color_discrete_map={"Historical": "#3b82d4", "Forecast": "#dc2626"},
             template="plotly_white",
         )
-        fig.add_vline(
-            x=last_date, line_dash="dash", line_color="#57606a",
-            annotation_text="Forecast start", annotation_position="top right",
+        # Convert Timestamp → ISO string so Plotly doesn't attempt integer arithmetic
+        _vline_x = last_date.isoformat()
+        fig.add_shape(
+            type="line",
+            x0=_vline_x, x1=_vline_x,
+            y0=0, y1=1,
+            xref="x", yref="paper",
+            line=dict(dash="dash", color="#57606a", width=1.5),
+        )
+        fig.add_annotation(
+            x=_vline_x, y=1,
+            xref="x", yref="paper",
+            text="Forecast start",
+            showarrow=False,
+            xanchor="left",
+            yanchor="top",
+            font=dict(size=11, color="#57606a"),
+            bgcolor="rgba(255,255,255,0.7)",
         )
         fig.update_layout(margin=dict(t=20))
         st.plotly_chart(fig, use_container_width=True)
 
+        # Display table with Date formatted as string to avoid Arrow serialisation issues
+        df_fc_display = df_fc.copy()
+        df_fc_display["Date"] = df_fc_display["Date"].dt.strftime("%Y-%m-%d")
         st.markdown("#### 📋 Forecast Table")
-        st.dataframe(df_fc, use_container_width=True)
+        st.dataframe(df_fc_display, use_container_width=True)
         st.caption(
             "⚠️ Forecasts are model predictions, not measurements. "
             "Uncertainty grows with forecast horizon as errors compound through the lag features."
